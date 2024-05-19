@@ -14,9 +14,9 @@ build-container-image: ## Build container image.
 .PHONY: configmap
 configmap: ## Create the configmap.
 	oc delete configmap fluentd-config 2>/dev/null || true
-	tmp_file=$$(mktemp)
-	cp fluent.conf $$tmp_file
-	sed -i 's/_PROJECT_/$(PROJECT)/g' $$tmp_file
+	tmp_file=$$(mktemp); \
+	cp fluent.conf $$tmp_file; \
+	sed -i 's/_PROJECT_/$(PROJECT)/g' $$tmp_file; \
 	oc create configmap fluentd-config --from-file=fluent.conf=$$tmp_file
 
 .PHONY: serviceaccount
@@ -39,9 +39,9 @@ clusterrolebinding: ## Create the cluster role binding.
 .PHONY: deployment
 deployment: ## Create the deployment.
 	oc delete -f fluentd-test.yaml || true
-	tmp_file=$$(mktemp)
-	cp fluentd-test.yaml $$tmp_file
-	sed -i 's/_IMAGE_/$(IMAGE)/g' $$tmp_file
+	tmp_file=$$(mktemp); \
+	cp fluentd-test.yaml $$tmp_file; \
+	sed -i 's/_IMAGE_/$(IMAGE)/g' $$tmp_file; \
 	oc apply -f $$tmp_file
 
 .PHONY: deploy
