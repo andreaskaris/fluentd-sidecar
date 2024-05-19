@@ -47,6 +47,13 @@ deployment: ## Create the deployment.
 .PHONY: deploy
 deploy: configmap serviceaccount clusterrole clusterrolebinding deployment ## (Re-)Deploy all resources. Requires image $(IMAGE) (default:quay.io/akaris/centos:fluentd).
 
+.PHONY: undeploy
+undeploy: ## Undeploy everything that we deployed.
+	oc project default
+	oc delete project $(PROJECT)
+	oc delete clusterrolebinding fluentd-custom-logs-writer
+	oc delete -f fluentd-custom-logs-writer.yaml
+
 ## From https://dwmkerr.com/makefile-help-command/.
 .PHONY: help
 help: # Show help for each of the Makefile recipes.
