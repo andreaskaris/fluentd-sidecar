@@ -54,7 +54,7 @@ undeploy: ## Undeploy everything that we deployed.
 	@echo "ClusterRolebinding and ClusterRole deleted. Please delete the correct project manually."
 	@echo "E.g.:"
 	@echo "    oc project default"
-	@echo "    oc delete $(PROJECT)"
+	@echo "    oc delete project $(PROJECT)"
 
 ## From https://dwmkerr.com/makefile-help-command/.
 .PHONY: help
