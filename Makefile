@@ -21,7 +21,7 @@ configmap: ## Create the configmap.
 
 .PHONY: serviceaccount
 serviceaccount: ## Create the service account.
-	oc delete serviceaccount fluentd-serviceaccount >/dev/null || true
+	oc delete serviceaccount fluentd-serviceaccount 2>/dev/null || true
 	oc create serviceaccount fluentd-serviceaccount
 
 # According to https://loki-operator.dev/docs/forwarding_logs_to_gateway.md/#forwarding-clients
@@ -38,10 +38,10 @@ clusterrolebinding: ## Create the cluster role binding.
 
 .PHONY: deployment
 deployment: ## Create the deployment.
-	oc delete -f fluentd-test.yaml || true
+	oc delete -f fluentd-test.yaml 2>/dev/null || true
 	tmp_file=$$(mktemp); \
 	cp fluentd-test.yaml $$tmp_file; \
-	sed -i 's/_IMAGE_/$(IMAGE)/g' $$tmp_file; \
+	sed -i 's#_IMAGE_#$(IMAGE)#g' $$tmp_file; \
 	oc apply -f $$tmp_file
 
 .PHONY: deploy
@@ -54,7 +54,7 @@ undeploy: ## Undeploy everything that we deployed.
 	@echo "ClusterRolebinding and ClusterRole deleted. Please delete the correct project manually."
 	@echo "E.g.:"
 	@echo "    oc project default"
-	@echo "    oc delete <project name>"
+	@echo "    oc delete $(PROJECT)"
 
 ## From https://dwmkerr.com/makefile-help-command/.
 .PHONY: help
