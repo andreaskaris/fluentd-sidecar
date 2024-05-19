@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fluentd-test
+  name: fluentd-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd-test
+  template:
+    metadata:
+      labels:
+        app: fluentd-test
+    spec:
+      # ServiceAccount fluentd-serviceaccount is bound to ClusterRole fluentd-custom-logs-writer.
+      # ClusterRole fluentd-custom-logs-writer has get,create verbs for loki resources application, infrastructure, audit.
+      serviceAccountName: fluentd-serviceaccount
+      containers:
+        # Container fluentd-sidecar runs the fluentd daemon. The fluentd daemon reads its configuration from /etc/fluent/fluent.conf.
+        # That configuration is provided by ConfigMap fluentd-config and the configuration instructs fluentd to read
+        # JSON formatted lines from /fluent-logs/log.txt, transform them, and then forward them to Loki stack.
+        # File /fluent-logs/log.txt is shared (with an emptydir volume) between the sidecar and container fluentd-main
+        # and fluentd-main writes to /fluent-logs/log.txt.
+      - name: fluentd-sidecar
+        image: _IMAGE_
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          /opt/fluent/bin/fluentd
+        volumeMounts:
+        - mountPath: /fluent-logs
+          name: fluent-logs
+        - mountPath: /etc/fluent
+          name: fluentd-config
+        # Container fluentd-main writes logs to stdout and to stderr. These logs will be picked up by the supported
+        # OpenShift application logging. They will be forwarded to Loki stack and can be inspected from the OpenShift
+        # console. The container writes a 3rd log to /fluent-logs/log.txt.
+        # This log file will be picked up by fluentd  inside container fluentd-sidecar.
+        # Each log line is in valid JSON so that the fluentd JSON parser can ingest it properly.
+      - name: fluentd-main
+        image: _IMAGE_
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          while true; do
+            echo -ne "Printing something to stdout at date: $(date)\n"
+            echo -ne "Printing something to stderr at date: $(date)\n" >&2
+            echo -ne "{\"message\": \"Printing something to file, picked up by fluentd\", \"date\": \"$(date)\", \"custom field\": \"custom\"}\n" >> /fluent-logs/log.txt
+            sleep 1
+          done
+        volumeMounts:
+        - mountPath: /fluent-logs
+          name: fluent-logs
+      volumes:
+      - name: fluent-logs
+        emptyDir:
+          sizeLimit: 500Mi
+      - name: fluentd-config
+        configMap:
+          name: fluentd-config

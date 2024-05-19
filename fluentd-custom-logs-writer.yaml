@@ -1,0 +1,22 @@
+# The supported and documented setup for LokiStack uses .spec.tenants.mode: openshift-logging.
+# In order to forward into the OpenShift logging plugin for LokiStack in mode openshift-logging, the pod that wants
+# to forward logs into OpenShift logging needs to be associated to a ServiceAccount that is bound to a ClusterRole
+# which allows it to get and create application, infrastructure and audit logs resources.
+# See https://loki-operator.dev/docs/forwarding_logs_to_gateway.md/#openshift-logging for further details.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluentd-custom-logs-writer
+rules:
+- apiGroups:
+  - 'loki.grafana.com'
+  resources:
+  - application
+  - infrastructure
+  - audit
+  resourceNames:
+  - logs
+  verbs:
+  - 'get'
+  - 'create'
