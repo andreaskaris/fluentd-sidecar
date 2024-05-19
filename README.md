@@ -56,7 +56,7 @@ See https://grafana.com/docs/loki/latest/send-data/fluentd/#usage for further de
 The supported and documented setup for LokiStack uses `.spec.tenants.mode: openshift-logging`. Therefore,
 fluentd inside `fluentd-sidecar` will have to authenticate with OpenShift and to be authorized by the OpenShift LokiStack.
 In order to do so, we run the fluentd test pod with ServiceAccount `fluentd-serviceaccount`. This ServiceAccount is bound
-to ClusterRole `fluentd-custom-logs-writer``.
+to ClusterRole `fluentd-custom-logs-writer`.
 ClusterRole `fluentd-custom-logs-writer` has `get`,`create` verbs for loki `logs` resources `application`, `infrastructure`,
 `audit`. See https://loki-operator.dev/docs/forwarding_logs_to_gateway.md/#openshift-logging for further details.
 The configuration that instructs fluentd to use the `ca_cert` and `bearer_token_file`  is documented in
