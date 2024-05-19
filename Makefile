@@ -49,10 +49,12 @@ deploy: configmap serviceaccount clusterrole clusterrolebinding deployment ## (R
 
 .PHONY: undeploy
 undeploy: ## Undeploy everything that we deployed.
-	oc project default
-	oc delete project $(PROJECT)
-	oc delete clusterrolebinding fluentd-custom-logs-writer
-	oc delete -f fluentd-custom-logs-writer.yaml
+	oc delete clusterrolebinding fluentd-custom-logs-writer 2>/dev/null || true
+	oc delete -f fluentd-custom-logs-writer.yaml 2>/dev/null || true
+	@echo "ClusterRolebinding and ClusterRole deleted. Please delete the correct project manually."
+	@echo "E.g.:"
+	@echo "    oc project default"
+	@echo "    oc delete <project name>"
 
 ## From https://dwmkerr.com/makefile-help-command/.
 .PHONY: help
