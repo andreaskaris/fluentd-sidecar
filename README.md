@@ -7,7 +7,7 @@ serve for demonstration purposes only. It is by no means meant to be complete, s
 ## How this works
 
 The only supported way in OpenShift to store application logs inside the OpenShift Logging Operator's stack is by
-printing logs to stdout / stderr. The container logs will be picked up by vector or fluent and are then forwarded to
+printing logs to stdout / stderr. The container logs will be picked up by vector or fluentd and are then forwarded to
 LokiStack. However, it is technically feasible (albeit not supported) to run a fluentd sidecar for a given pod and
 have the fluentd sidecar forward logs into LokiStack, as well.
 
