@@ -238,3 +238,5 @@ The logs of `fluentd-sidecar` should show no errors:
 
 In the OpenShift console, you should be able to filter by namespace (`test-forward`) in this case. And you should
 see the supported stdout/stderr logs as well as the custom, unsupported fluentd log:
+
+![image](https://github.com/andreaskaris/fluentd-sidecar/assets/3291433/343f171d-075f-4d2e-9a77-e3fba0c44968)
